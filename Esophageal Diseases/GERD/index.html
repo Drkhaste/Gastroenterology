@@ -1,0 +1,585 @@
+
+        <!DOCTYPE html>
+        <html lang="fa" dir="rtl">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>GERD</title>
+            
+            <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            
+            <style>
+                :root {
+                    --primary: #0d9488;
+                    --primary-light: #ccfbf1;
+                    --bg-body: #f3f4f6;
+                    --bg-card: #ffffff;
+                    --text-main: #1e293b;
+                    --text-sec: #64748b;
+                    --border: #e2e8f0;
+                    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                }
+                
+                body.dark-mode {
+                    --primary: #2dd4bf;
+                    --primary-light: #134e4a;
+                    --bg-body: #0f172a;
+                    --bg-card: #1e293b;
+                    --text-main: #f1f5f9;
+                    --text-sec: #94a3b8;
+                    --border: #334155;
+                    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+                }
+
+                /* ---- CONTENT PROTECTION CSS ---- */
+                body {
+                    -webkit-user-select: none; /* Safari */
+                    -ms-user-select: none; /* IE 10 and IE 11 */
+                    user-select: none; /* Standard syntax */
+                    font-family: 'Vazirmatn', sans-serif;
+                    background-color: var(--bg-body);
+                    color: var(--text-main);
+                    margin: 0;
+                    padding: 20px;
+                    padding-bottom: 80px;
+                }
+
+                .container { max_width: 900px; margin: 0 auto; }
+
+                /* Tools & Buttons */
+                .tools {
+                    position: fixed; top: 20px; left: 20px; z-index: 1000;
+                    display: flex; gap: 10px;
+                }
+                .tool-btn {
+                    background: var(--bg-card); color: var(--text-main);
+                    border: 1px solid var(--border);
+                    border-radius: 50%; width: 45px; height: 45px;
+                    display: flex; align-items: center; justify-content: center;
+                    cursor: pointer; box-shadow: var(--shadow); font-size: 18px;
+                }
+                .tool-btn:hover { color: var(--primary); }
+
+                /* --- NEW SCROLLABLE BREADCRUMB --- */
+                .breadcrumb-wrapper {
+                    overflow-x: auto; /* Enable horiz scroll */
+                    white-space: nowrap;
+                    -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+                    margin-bottom: 30px;
+                    padding-bottom: 10px; /* Space for scrollbar if visible */
+                }
+                .breadcrumb-wrapper::-webkit-scrollbar { display: none; } /* Hide scrollbar */
+                
+                .breadcrumb-box {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .bc-item {
+                    background: var(--bg-card);
+                    padding: 8px 16px;
+                    border-radius: 12px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    color: var(--text-sec);
+                    border: 1px solid var(--border);
+                    display: flex; align-items: center;
+                }
+                .bc-item.active {
+                    background: var(--primary);
+                    color: white;
+                    border-color: var(--primary);
+                    box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3);
+                }
+                .bc-arrow { color: var(--text-sec); font-size: 12px;}
+
+                /* Cards */
+                .section-card {
+                    background: var(--bg-card);
+                    border-radius: 16px;
+                    margin-bottom: 15px;
+                    border: 1px solid var(--border);
+                    overflow: hidden;
+                    box-shadow: var(--shadow);
+                }
+                
+                .card-header {
+                    padding: 18px 25px;
+                    cursor: pointer;
+                    display: flex; justify-content: space-between; align-items: center;
+                    background: var(--bg-card);
+                }
+                .header-content { display: flex; align-items: center; gap: 12px; }
+                .header-title { font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin: 0; }
+                .section-icon { color: var(--primary); font-size: 1.4rem; width: 30px; text-align: center;}
+                
+                .toggle-icon { transition: transform 0.3s ease; color: var(--text-sec); }
+                .section-card.active .toggle-icon { transform: rotate(180deg); }
+
+                .card-body {
+                    padding: 0 25px;
+                    max-height: 0; /* Default Closed */
+                    overflow: hidden;
+                    transition: max-height 0.4s ease-out, padding 0.3s ease;
+                    color: var(--text-main);
+                    font-size: 1.1rem;
+                    line-height: 1.9;
+                }
+                
+                .section-card.active .card-body {
+                    padding: 25px;
+                    max-height: 2000px;
+                    overflow: visible;
+                    border-top: 1px solid var(--border);
+                }
+
+                /* --- LIST FIXES FOR RTL --- */
+                ul, ol {
+                    margin-right: 25px; /* Prevent bullet clipping in RTL */
+                    padding-left: 0;
+                }
+                li { margin-bottom: 8px; }
+
+                strong { font-weight: 900; color: var(--text-main); }
+                
+                #btn-back-to-top {
+                    position: fixed; bottom: 30px; right: 30px; display: none;
+                    background-color: var(--primary); color: white;
+                    border: none; border-radius: 50%; width: 50px; height: 50px;
+                    font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                    cursor: pointer; z-index: 99;
+                }
+
+                /* PRINT */
+                @media print {
+                    .tools, #btn-back-to-top { display: none; }
+                    .card-body { max-height: none !important; display: block !important; }
+                    body { user-select: auto; background: white; color: black; }
+                    .breadcrumb-wrapper { display: none; }
+                    .section-card { break-inside: avoid; border: 1px solid #999; box-shadow: none; }
+                }
+
+                /* MOBILE */
+                @media screen and (max-width: 600px) {
+                    .container { padding: 5px; }
+                    .card-header { padding: 15px; }
+                    .header-title { font-size: 1rem; }
+                    .card-body { font-size: 0.95rem; line-height: 1.7; padding: 0 15px; }
+                    .section-card.active .card-body { padding: 20px 15px; }
+                    .tools { top: 10px; left: 10px; }
+                    .bc-item { padding: 6px 12px; font-size: 13px; }
+                }
+            </style>
+        </head>
+        <body oncontextmenu="return false"> <!-- BLOCK RIGHT CLICK -->
+
+            <div class="tools">
+                <div class="tool-btn" onclick="toggleDarkMode()" title="Dark Mode">
+                    <i class="fas fa-moon" id="dm-icon"></i>
+                </div>
+            </div>
+
+            <button id="btn-back-to-top" onclick="scrollToTop()">
+                <i class="fas fa-arrow-up"></i>
+            </button>
+
+            <div class="container">
+                <!-- ONE LINE SCROLLABLE BREADCRUMB with TOPIC -->
+                <div class="breadcrumb-wrapper">
+                    <div class="breadcrumb-box">
+                        <div class="bc-item"><i class="fas fa-university"></i>&nbsp; گوارش</div>
+                        <div class="bc-arrow"><i class="fas fa-chevron-left"></i></div>
+                        <div class="bc-item"><i class="fas fa-book-open"></i>&nbsp; بیماری های مری</div>
+                        <div class="bc-arrow"><i class="fas fa-chevron-left"></i></div>
+                        <!-- TOPIC IS HERE NOW -->
+                        <div class="bc-item active"><i class="fas fa-tag"></i>&nbsp; GERD</div>
+                    </div>
+                </div>
+
+                <div class="content-wrapper">
+                    
+                        
+                        <!-- CLOSED BY DEFAULT (No active class) -->
+                        <div class="section-card">
+                            <div class="card-header" onclick="toggleCard(this)">
+                                <div class="header-content">
+                                    <div class="section-icon"><i class="fas fa-book-medical"></i></div>
+                                    <h2 class="header-title">تعریف</h2>
+                                </div>
+                                <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">GERD عبارت است از <span style=" font-weight:700;">بروز علائم یا عوارض مخاطی ناشی از برگشت مزمن یا مکرر محتویات معده به مری</span> که منجر به ناراحتی بیمار یا آسیب به بافت مری می‌شود.<br />GERD یک اختلال عملکردی-ساختاری در ناحیه GE Junction است که تظاهر غالب آن سوزش سردل (Heartburn) و ریگورجیتاسیون است.</p></body></html>
+                            </div>
+                        </div>
+                        
+                    
+                        
+                        <!-- CLOSED BY DEFAULT (No active class) -->
+                        <div class="section-card">
+                            <div class="card-header" onclick="toggleCard(this)">
+                                <div class="header-content">
+                                    <div class="section-icon"><i class="fas fa-microscope"></i></div>
+                                    <h2 class="header-title">فیزیوپاتولوژی</h2>
+                                </div>
+                                <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">فیزیولوژی طبیعی شامل سه سد اصلی ضدرفلاکس است:</p>
+<ol style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">تونوس مناسب اسفنکتر تحتانی مری (LES)</span></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">زاویه His و دیافراگم (Crural diaphragm)</span></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">کلیرنس مری و بزاق قلیایی</span></li></ol>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">در GERD این سیستم‌ها دچار اختلال می‌شوند. مهم‌ترین تغییرات:</p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">کاهش تونوس LES</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">افزایش دفعات <span style=" font-weight:700;">ریلکسیشن گذرای LES (TLESRs)</span></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">اختلال پاکسازی مری</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">کاهش مقاومت مخاطی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">افزایش حجم و اسیدیته رفلکس</li></ul></body></html>
+                            </div>
+                        </div>
+                        
+                    
+                        
+                        <!-- CLOSED BY DEFAULT (No active class) -->
+                        <div class="section-card">
+                            <div class="card-header" onclick="toggleCard(this)">
+                                <div class="header-content">
+                                    <div class="section-icon"><i class="fas fa-dna"></i></div>
+                                    <h2 class="header-title">پاتوژنز</h2>
+                                </div>
+                                <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">پاتوژنز شامل سه مؤلفه اصلی است:</p>
+<ol style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">افزایش مواجهه مری با اسید</span>: TLESR، فتق هیاتال، ضعف LES</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">آسیب مخاطی مستقیم</span>: اسید، پپسین، و صفرا در برخی بیماران</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">کاهش دفاع مخاط</span>: کاهش تولید بیکربنات، اختلال ترمیم اپی‌تلیال</li></ol>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">نتیجه نهایی: التهاب مری (Esophagitis)، متاپلازی (Barrett’s), و عوارض ساختاری.</p></body></html>
+                            </div>
+                        </div>
+                        
+                    
+                        
+                        <!-- CLOSED BY DEFAULT (No active class) -->
+                        <div class="section-card">
+                            <div class="card-header" onclick="toggleCard(this)">
+                                <div class="header-content">
+                                    <div class="section-icon"><i class="fas fa-viruses"></i></div>
+                                    <h2 class="header-title">اتیولوژی</h2>
+                                </div>
+                                <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">بیشترین عوامل مؤثر در ایجاد یا تشدید GERD عبارتند از:</p>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">عوامل فیزیولوژیک/ساختاری:</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">ضعف LES</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">فتق هیاتال</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تاخیر تخلیه معده</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">چاقی و افزایش فشار داخل شکمی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">بارداری</li></ul>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">عوامل دارویی:</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">مسدود‌کننده‌های کلسیم</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">آنتی‌کولینرژیک‌ها</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">بنزودیازپین‌ها</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">نیتروگلیسیرین</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">اپیوئیدها</li></ul>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">عوامل lifestyle:</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">غذاهای چرب، شکلات، نعناع</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">الکل، سیگار</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">وعده‌های حجیم</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">دراز کشیدن بلافاصله بعد غذا</li></ul></body></html>
+                            </div>
+                        </div>
+                        
+                    
+                        
+                        <!-- CLOSED BY DEFAULT (No active class) -->
+                        <div class="section-card">
+                            <div class="card-header" onclick="toggleCard(this)">
+                                <div class="header-content">
+                                    <div class="section-icon"><i class="fas fa-chart-pie"></i></div>
+                                    <h2 class="header-title">اپیدمیولوژی</h2>
+                                </div>
+                                <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li style=" font-size:large; font-weight:700;" dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">از شایع‌ترین اختلالات گوارشی در جهان: شیوع 10–20% در بزرگسالان.</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">شیوع بیشتر در افراد چاق، باردار، و مسن.</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Barrett’s esophagus در حدود 5–15% بیماران مزمن GERD دیده می‌شود.</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">مردان سفیدپوست بیشترین ریسک Barrett’s و adenocarcinoma را دارند.</li></ul></body></html>
+                            </div>
+                        </div>
+                        
+                    
+                        
+                        <!-- CLOSED BY DEFAULT (No active class) -->
+                        <div class="section-card">
+                            <div class="card-header" onclick="toggleCard(this)">
+                                <div class="header-content">
+                                    <div class="section-icon"><i class="fas fa-user-injured"></i></div>
+                                    <h2 class="header-title">علائم بالینی</h2>
+                                </div>
+                                <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">علائم تیپیک:</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">سوزش سردل (Heartburn)</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">ریگورجیتاسیون اسیدی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">درد/فشار ساب‌استرنال</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تشدید با غذا، دراز کشیدن، خم شدن</li></ul>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">علائم آتیپیک/Extra-esophageal:</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">سرفه مزمن</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">صدای گرفته (Hoarseness)</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">آسم مقاوم</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">درد قفسه سینه غیر قلبی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">گلودرد مزمن، احساس گلوی پر (Globus)</li></ul>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">علائم آلارم:</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">دیسفاژی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">ادینوفاژی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">کاهش وزن</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">استفراغ مداوم</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">خونریزی<br />=&gt; نیاز فوری به آندوسکوپی.</li></ul></body></html>
+                            </div>
+                        </div>
+                        
+                    
+                        
+                        <!-- CLOSED BY DEFAULT (No active class) -->
+                        <div class="section-card">
+                            <div class="card-header" onclick="toggleCard(this)">
+                                <div class="header-content">
+                                    <div class="section-icon"><i class="fas fa-stethoscope"></i></div>
+                                    <h2 class="header-title">تشخیص</h2>
+                                </div>
+                                <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تشخیص بر اساس ترکیبی از علائم و تست‌ها انجام می‌شود:</p>
+<ol style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">تشخیص بالینی:</span> در بیمار &lt; 60 سال بدون علامت هشدار، پاسخ به PPI تشخیصی است.</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">اندوسکوپی (EGD):</span> در علائم آلارم، عدم پاسخ درمانی، یا شک به Barrett’s.</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">مانومتری مری:</span> قبل از جراحی ضدرفلاکس یا شک به اختلال حرکتی.</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">pH Monitoring (24h pH-impedance):</span> استاندارد طلایی برای اثبات رفلکس اسیدی یا غیر اسیدی.</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">Barium swallow:</span> کمتر ارزشمند، بیشتر برای بررسی آناتومی.</li></ol></body></html>
+                            </div>
+                        </div>
+                        
+                    
+                        
+                        <!-- CLOSED BY DEFAULT (No active class) -->
+                        <div class="section-card">
+                            <div class="card-header" onclick="toggleCard(this)">
+                                <div class="header-content">
+                                    <div class="section-icon"><i class="fas fa-notes-medical"></i></div>
+                                    <h2 class="header-title">اپروچ</h2>
+                                </div>
+                                <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">1. بیمار بدون علامت آلارم:</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">شروع درمان تجربی با PPI روزانه 4–8 هفته</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">در صورت پاسخ: ادامه و سپس Taper</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">در صورت عدم پاسخ: EGD → در صورت طبیعی بودن → pH-metry</li></ul>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">2. بیمار با علامت آلارم:</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">فوراً EGD</li></ul>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">3. شک به Extra-esophageal GERD:</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">درمان استاندارد GERD سپس تست pH/impedance در صورت لزوم</li></ul>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">4. قبل جراحی:</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">مانومتری + pH monitoring</li></ul></body></html>
+                            </div>
+                        </div>
+                        
+                    
+                        
+                        <!-- CLOSED BY DEFAULT (No active class) -->
+                        <div class="section-card">
+                            <div class="card-header" onclick="toggleCard(this)">
+                                <div class="header-content">
+                                    <div class="section-icon"><i class="fas fa-pills"></i></div>
+                                    <h2 class="header-title">درمان</h2>
+                                </div>
+                                <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">۱. اصلاح سبک زندگی:</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">کاهش وزن (قوی‌ترین توصیه)</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">اجتناب از غذاهای محرک (چربی، شکلات، نعناع، الکل)</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">اجتناب از وعده حجیم</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">عدم دراز کشیدن 2–3 ساعت پس از غذا</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">بالا بردن سر تخت (نه با بالش اضافی)</li></ul>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">۲. درمان دارویی:</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">PPIها (First-line):</span>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;">
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Omeprazole, Pantoprazole, Esomeprazole</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">مصرف ۳۰–۶۰ دقیقه قبل غذا</li></ul></li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">H2-blockers:</span> برای علائم شبانه یا جایگزین خفیف</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">Antacidها:</span> برای تسکین سریع</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">Baclofen:</span> کاهش TLESR (در موارد خاص)</li></ul>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">۳. درمان اندوسکوپیک/جراحی:</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">Nissen fundoplication</span> برای بیماران:
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">جوان با پاسخ خوب به PPI اما نیاز طولانی‌مدت</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">عدم تحمل دارو</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">رفلکس اثبات‌شده مقاوم به درمان</li></ul></li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">LINX device</span>: حلقه مغناطیسی تقویت LES</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">روش‌های اندوسکوپیک جدید: نتایج متغیر</li></ul></body></html>
+                            </div>
+                        </div>
+                        
+                    
+                        
+                        <!-- CLOSED BY DEFAULT (No active class) -->
+                        <div class="section-card">
+                            <div class="card-header" onclick="toggleCard(this)">
+                                <div class="header-content">
+                                    <div class="section-icon"><i class="fas fa-lightbulb"></i></div>
+                                    <h2 class="header-title">خلاصه نکات</h2>
+                                </div>
+                                <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li style=" font-size:large; font-weight:700;" style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">GERD ناشی از اختلال در سد ضدرفلاکس (TLESRs، ضعف LES، فتق هیاتال) است.</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تشخیص بدون علائم هشدار غالباً درمان‌محور و مبتنی بر پاسخ به PPI است.</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">EGD فقط برای آلارم، عدم پاسخ درمانی یا غربالگری Barrett’s.</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">استاندارد طلایی اثبات بیماری: <span style=" font-weight:700;">pH/impedance monitoring</span>.</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">درمان اصلی: تغییر سبک زندگی + PPI.</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">در بیماران منتخب، جراحی Fundoplication بسیار موفق است.</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">GERD مزمن می‌تواند منجر به Barrett’s و Adenocarcinoma شود و نیاز به پیگیری دارد.</li></ul></body></html>
+                            </div>
+                        </div>
+                        
+                    
+                </div>
+            </div>
+
+            <script>
+                // --- SECURITY SCRIPT ---
+                document.onkeydown = function(e) {
+                    if(e.keyCode == 123) { return false; } // F12
+                    if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; } // Ctrl+Shift+I
+                    if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; } // Ctrl+Shift+C
+                    if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; } // Ctrl+Shift+J
+                    if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } // Ctrl+U
+                }
+
+                function toggleCard(header) {
+                    const card = header.parentElement;
+                    card.classList.toggle('active');
+                }
+
+                function toggleDarkMode() {
+                    document.body.classList.toggle('dark-mode');
+                    const icon = document.getElementById('dm-icon');
+                    if(document.body.classList.contains('dark-mode')){
+                        icon.classList.remove('fa-moon');
+                        icon.classList.add('fa-sun');
+                    } else {
+                        icon.classList.remove('fa-sun');
+                        icon.classList.add('fa-moon');
+                    }
+                }
+
+                const btnTop = document.getElementById("btn-back-to-top");
+                window.onscroll = function() {
+                    if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                        btnTop.style.display = "block";
+                    } else {
+                        btnTop.style.display = "none";
+                    }
+                };
+                function scrollToTop() {
+                    window.scrollTo({top: 0, behavior: 'smooth'});
+                }
+            </script>
+        </body>
+        </html>
+        
