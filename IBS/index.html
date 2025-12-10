@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="خلاصه درس بیماری های روده - مبحث IBS">
+    <meta name="author" content="MedNoteApp">
+    <title>IBS</title>
+
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-light-theme: #0d9488;
+            --primary-dark-theme: #2dd4bf;
+            --primary-light: #ccfbf1;
+
+            --bg-body-light: #f3f4f6;
+            --bg-card-light: #ffffff;
+            --text-main-light: #1e293b;
+            --text-sec-light: #64748b;
+            --border-light: #e2e8f0;
+
+            --bg-body-dark: #0f172a;
+            --bg-card-dark: #1e293b;
+            --text-main-dark: #f1f5f9;
+            --text-sec-dark: #94a3b8;
+            --border-dark: #334155;
+
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            /* Default to dark mode colors */
+            --primary: var(--primary-dark-theme);
+            --bg-body: var(--bg-body-dark);
+            --bg-card: var(--bg-card-dark);
+            --text-main: var(--text-main-dark);
+            --text-sec: var(--text-sec-dark);
+            --border: var(--border-dark);
+
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding-top: 70px; /* Space for the smaller sticky header */
+        }
+
+        body.light-mode {
+            --primary: var(--primary-light-theme);
+            --bg-body: var(--bg-body-light);
+            --bg-card: var(--bg-card-light);
+            --text-main: var(--text-main-light);
+            --text-sec: var(--text-sec-light);
+            --border: var(--border-light);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* --- STICKY HEADER (SMALLER) --- */
+        .sticky-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 8px 20px; /* Reduced padding */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+        }
+
+        .breadcrumb-wrapper {
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+        .breadcrumb-wrapper::-webkit-scrollbar { display: none; }
+
+        .breadcrumb-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .bc-item {
+            padding: 5px 10px; /* Reduced padding */
+            border-radius: 8px;
+            font-size: 12px; /* Smaller font */
+            font-weight: 500;
+            color: var(--text-sec);
+            background: var(--bg-body);
+            display: flex;
+            align-items: center;
+        }
+        .bc-item.active {
+            background: var(--primary);
+            color: white;
+        }
+        .bc-arrow { color: var(--text-sec); font-size: 10px; } /* Smaller arrow */
+
+        .theme-toggle-btn {
+            background: var(--bg-body);
+            color: var(--text-sec);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px; /* Smaller icon */
+            margin-right: 15px; /* From breadcrumbs */
+        }
+        .theme-toggle-btn:hover { color: var(--primary); }
+
+        /* --- SECTION DETAILS/SUMMARY (ACCORDION) --- */
+        .section-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            padding: 18px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-header::-webkit-details-marker { display: none; } /* Hide default arrow */
+
+        .header-content { display: flex; align-items: center; gap: 12px; }
+        .header-title { font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin: 0; }
+        .section-icon { color: var(--primary); font-size: 1.4rem; width: 30px; text-align: center; }
+
+        .toggle-icon { transition: transform 0.3s ease; color: var(--text-sec); }
+        .section-card[open] .toggle-icon { transform: rotate(180deg); }
+
+        .sticky-title {
+            position: sticky;
+            top: 55px; /* Below main header */
+            background: var(--primary);
+            color: white;
+            padding: 10px 25px;
+            z-index: 999;
+            display: none; /* Hidden by default */
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-card[open] .sticky-title {
+            display: block;
+        }
+
+        .card-body {
+            padding: 25px;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            line-height: 1.9;
+            border-top: 1px solid var(--border);
+        }
+
+        /* --- BACK TO TOP BUTTON --- */
+        #btn-back-to-top {
+            position: fixed; bottom: 30px; right: 30px; display: none;
+            background-color: var(--primary); color: white;
+            border: none; border-radius: 50%; width: 50px; height: 50px;
+            font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer; z-index: 99;
+        }
+
+        /* --- FLASHCARD STYLES (SIMPLIFIED & RESPONSIVE) --- */
+        .flashcard-container {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px dashed var(--border);
+        }
+        .flashcard {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            padding: 20px;
+        }
+        .flashcard-question {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .flashcard-answer {
+            display: none; /* Hidden by default */
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+            color: var(--text-sec);
+        }
+        .flashcard-toggle {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false" class="dark-mode">
+
+    <header class="sticky-header">
+        <div class="breadcrumb-wrapper">
+            <nav class="breadcrumb-box">
+                <div class="bc-item"><i class="fas fa-university"></i>&nbsp; گوارش</div>
+                <div class="bc-arrow"><i class="fas fa-chevron-left"></i></div>
+                <div class="bc-item"><i class="fas fa-book-open"></i>&nbsp; بیماری های روده</div>
+                <div class="bc-arrow"><i class="fas fa-chevron-left"></i></div>
+                <div class="bc-item active"><i class="fas fa-tag"></i>&nbsp; IBS</div>
+            </nav>
+        </div>
+        <div class="theme-toggle-btn" onclick="toggleTheme()" title="تغییر تم">
+            <i class="fas fa-sun" id="theme-icon"></i> <!-- Sun icon for dark mode -->
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="content-wrapper">
+            
+                
+                <details class="section-card" name="accordion">
+                    <summary class="card-header">
+                        <div class="header-content">
+                            <div class="section-icon"><i class="fas fa-book-medical"></i></div>
+                            <h2 class="header-title">تعریف</h2>
+                        </div>
+                        <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                    </summary>
+                    <div class="sticky-title">تعریف</div>
+                    <div class="card-body">
+                        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">IBS یک اختلال عملکردی دستگاه گوارش است که با معیارهای Rome IV تعریف می‌شود:</p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">درد شکمی عودکننده</span> حداقل یک روز در هفته در سه ماه گذشته</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">همراه با حداقل دو مورد</span> از موارد زیر:
+<ol style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">ارتباط درد با دفع</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تغییر در <span style=" font-style:italic;">فراوانی</span> اجابت مزاج</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تغییر در <span style=" font-style:italic;">قوام</span> مدفوع</li></ol></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">عدم وجود بیماری ساختاری، التهابی یا متابولیک</span> که علائم را توضیح دهد.</li></ul>
+<p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">IBS زیرگروه‌ها:</p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">IBS-C: غالب با یبوست</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">IBS-D: غالب با اسهال</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">IBS-M: مخلوط</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">IBS-U: نامشخص</li></ul></body></html>
+                    </div>
+                </details>
+                
+            
+                
+                <details class="section-card" name="accordion">
+                    <summary class="card-header">
+                        <div class="header-content">
+                            <div class="section-icon"><i class="fas fa-microscope"></i></div>
+                            <h2 class="header-title">فیزیوپاتولوژی</h2>
+                        </div>
+                        <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                    </summary>
+                    <div class="sticky-title">فیزیوپاتولوژی</div>
+                    <div class="card-body">
+                        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">IBS یک بیماری چندعاملی با اختلال در محور Brain–Gut است. مکانیسم‌ها در هاریسون به‌صورت چندبعدی آمده‌اند:</p>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">3.1. اختلال در محور Brain–Gut</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تغییرات CNS در پردازش درد احشایی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">فعالیت غیرطبیعی آمیگدال، قشر پیش‌پیشانی و انسولا</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">حساسیت بیش‌ازحد به محرک‌های گوارشی (Visceral Hypersensitivity)</li></ul>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">3.2. اختلال حرکتی روده (Motility)</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">IBS-D: <span style=" font-weight:700;">افزایش فعالیت حرکتی و پاسخ بیش‌ازحد کولون به استرس</span></li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">IBS-C: <span style=" font-weight:700;">کاهش حرکات کولون و اختلال ترانزیت</span></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">وجود early and exaggerated gastrocolic reflex</li></ul>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">3.3. حساسیت احشایی (Visceral Hyperalgesia)</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">پاسخ درد بیش‌ازحد به اتساع روده</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">ناشی از نوروپلاستیسیته محیطی (Enteric) و مرکزی (CNS)</li></ul>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">3.4. التهاب خفیف سطح پایین (Low-grade Inflammation)</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">افزایش لنفوسیت‌های موکوزال</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">افزایش Mast cells نزدیک پایانه‌های عصبی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">نقش در درد و اسهال</li></ul>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">3.5. میکروبیوم روده (Gut Microbiota Dysbiosis)</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">کاهش diversity</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تغییر متابولیت‌های باکتریایی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">ارتباط با post-infectious IBS</li></ul>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">3.6. اختلال سد روده (Barrier Dysfunction)</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">نفوذپذیری افزایش‌یافته</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">ارتباط با اسهال مزمن و التهاب خفیف</li></ul></body></html>
+                    </div>
+                </details>
+                
+            
+                
+                <details class="section-card" name="accordion">
+                    <summary class="card-header">
+                        <div class="header-content">
+                            <div class="section-icon"><i class="fas fa-dna"></i></div>
+                            <h2 class="header-title">پاتوژنز</h2>
+                        </div>
+                        <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                    </summary>
+                    <div class="sticky-title">پاتوژنز</div>
+                    <div class="card-body">
+                        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">پاتوژنز IBS نتیجه <span style=" font-weight:700;">تعامل چندین مسیر</span> است:</p>
+<h3 style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">4.1. Post-Infectious IBS</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">۶–۳۰٪ موارد بعد از گاستروانتریت باکتریایی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">مکانیسم: التهاب پایدار، تغییر میکروبیوم، اختلال حرکتی</li></ul>
+<h3 style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">4.2. Altered Serotonin Signaling</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">کاهش جذب 5-HT در IBS-D</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">اختلال در 5-HT3 / 5-HT4 pathways</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تأثیر بر درد، ترانزیت، ترشح</li></ul>
+<h3 style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">4.3. Mast Cell Activation</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">ترشح مدیاتورها: histamine, tryptase, prostaglandins</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تحریک اعصاب داخل‌جداری</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">رابطه مستقیم با درد بعد از استرس</li></ul>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">4.4. استرس و محور HPA</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">افزایش CRH</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">CRH موجب افزایش حرکات کولون و حساسیت درد می‌شود.</li></ul></body></html>
+                    </div>
+                </details>
+                
+            
+                
+                <details class="section-card" name="accordion">
+                    <summary class="card-header">
+                        <div class="header-content">
+                            <div class="section-icon"><i class="fas fa-viruses"></i></div>
+                            <h2 class="header-title">اتیولوژی</h2>
+                        </div>
+                        <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                    </summary>
+                    <div class="sticky-title">اتیولوژی</div>
+                    <div class="card-body">
+                        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">IBS یک بیماری <span style=" font-style:italic;">چندعاملی</span> است و علت واحد ندارد:</p>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">علل/ریسک‌فاکتورهای مؤثر (بر اساس هاریسون):</span></h3>
+<ol style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">ژنتیک:</span> ارتباط خانوادگی ضعیف اما قابل‌توجه</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">عفونت‌های گوارشی قبلی</span></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">دیس‌بیوز میکروبیوم</span></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">استرس‌های روانی – تروما – اضطراب</span></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">اختلالات CNS</span></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">اختلالات Motility</span></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">غذاها و FODMAPs</span></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">هورمون‌ها (نوسانات سیکل قاعدگی)</span></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">فعال‌سازی سیستم ایمنی لو-گرید</span> </li></ol></body></html>
+                    </div>
+                </details>
+                
+            
+                
+                <details class="section-card" name="accordion">
+                    <summary class="card-header">
+                        <div class="header-content">
+                            <div class="section-icon"><i class="fas fa-chart-pie"></i></div>
+                            <h2 class="header-title">اپیدمیولوژی</h2>
+                        </div>
+                        <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                    </summary>
+                    <div class="sticky-title">اپیدمیولوژی</div>
+                    <div class="card-body">
+                        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">شیوع جهانی: <span style=" font-weight:700;">۱۰ تا ۱۵ درصد</span> (بر اساس هاریسون).</p>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">بیشتر در <span style=" font-weight:700;">سنین 20–40</span>.</p>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">زنان &gt; مردان</span> (به‌ویژه IBS-C).</p>
+<p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">IBS-D</span> در مردان کمی شایع‌تر است.</p>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">مرگ‌ومیر ندارد و بیماری <span style=" font-style:italic;">بناین</span> محسوب می‌شود، اما <span style=" font-weight:700;">بار اقتصادی و افت کیفیت زندگی واضح</span> ایجاد می‌کند.</p>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">بیماران بیشتر از جمعیت سالم دچار <span style=" font-weight:700;">اضطراب و افسردگی</span> هستند (هم‌ابتلایی، نه علت مستقل).</p></body></html>
+                    </div>
+                </details>
+                
+            
+                
+                <details class="section-card" name="accordion">
+                    <summary class="card-header">
+                        <div class="header-content">
+                            <div class="section-icon"><i class="fas fa-user-injured"></i></div>
+                            <h2 class="header-title">علائم بالینی</h2>
+                        </div>
+                        <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                    </summary>
+                    <div class="sticky-title">علائم بالینی</div>
+                    <div class="card-body">
+                        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">6.1. علائم اصلی</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">درد یا ناراحتی شکمی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">ارتباط واضح با دفع</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">اسهال، یبوست یا تناوب بین هر دو</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">نفخ، احساس تخلیه ناقص</li></ul>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">6.2. علائم همراه</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">احساس فوریت دفع (اوریجنسی)</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">موکوس در مدفوع</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">گاز زیاد</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">علائم خارج‌گوارشی:
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">درد عضلانی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">سردرد</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">اختلال خواب</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">اضطراب/افسردگی</li></ul></li></ul>
+<h3 style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">6.3. Red Flags (طبق هاریسون – نیاز به بررسی بیشتر)</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">سن &gt; 50 سال با شروع جدید</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">کاهش وزن غیرقابل توضیح</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">خونریزی گوارشی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">کم‌خونی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">اسهال شبانه</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">سابقه فامیلی سرطان کولون یا IBD</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تب</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">افزایش CRP یا کالپروتکتین بالا</li></ul></body></html>
+                    </div>
+                </details>
+                
+            
+                
+                <details class="section-card" name="accordion">
+                    <summary class="card-header">
+                        <div class="header-content">
+                            <div class="section-icon"><i class="fas fa-stethoscope"></i></div>
+                            <h2 class="header-title">تشخیص</h2>
+                        </div>
+                        <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                    </summary>
+                    <div class="sticky-title">تشخیص</div>
+                    <div class="card-body">
+                        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+    <svg id="export-svg" width="100%" xmlns="http://www.w3.org/2000/svg" class="flowchart" style="max-width: 982.7437744140625px;" viewBox="0 0 982.7437744140625 1462.4000244140625" role="graphics-document document" aria-roledescription="flowchart-v2"><style xmlns="http://www.w3.org/1999/xhtml">p {margin: 0;}</style><style>#export-svg{font-family:arial,sans-serif;font-size:14px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#export-svg .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#export-svg .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#export-svg .error-icon{fill:#ffffff;}#export-svg .error-text{fill:#000000;stroke:#000000;}#export-svg .edge-thickness-normal{stroke-width:2px;}#export-svg .edge-thickness-thick{stroke-width:3.5px;}#export-svg .edge-pattern-solid{stroke-dasharray:0;}#export-svg .edge-thickness-invisible{stroke-width:0;fill:none;}#export-svg .edge-pattern-dashed{stroke-dasharray:3;}#export-svg .edge-pattern-dotted{stroke-dasharray:2;}#export-svg .marker{fill:#000000;stroke:#000000;}#export-svg .marker.cross{stroke:#000000;}#export-svg svg{font-family:arial,sans-serif;font-size:14px;}#export-svg p{margin:0;}#export-svg .label{font-family:arial,sans-serif;color:#333;}#export-svg .cluster-label text{fill:#000000;}#export-svg .cluster-label span{color:#000000;}#export-svg .cluster-label span p{background-color:transparent;}#export-svg .label text,#export-svg span{fill:#333;color:#333;}#export-svg .node rect,#export-svg .node circle,#export-svg .node ellipse,#export-svg .node polygon,#export-svg .node path{fill:#ffffff;stroke:#000000;stroke-width:2px;}#export-svg .rough-node .label text,#export-svg .node .label text,#export-svg .image-shape .label,#export-svg .icon-shape .label{text-anchor:middle;}#export-svg .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#export-svg .rough-node .label,#export-svg .node .label,#export-svg .image-shape .label,#export-svg .icon-shape .label{text-align:center;}#export-svg .node.clickable{cursor:pointer;}#export-svg .root .anchor path{fill:#000000!important;stroke-width:0;stroke:#000000;}#export-svg .arrowheadPath{fill:#000000;}#export-svg .edgePath .path{stroke:#000000;stroke-width:2px;}#export-svg .flowchart-link{stroke:#000000;fill:none;}#export-svg .edgeLabel{background-color:hsl(-120, 0%, 80%);text-align:center;}#export-svg .edgeLabel p{background-color:hsl(-120, 0%, 80%);}#export-svg .edgeLabel rect{opacity:0.5;background-color:hsl(-120, 0%, 80%);fill:hsl(-120, 0%, 80%);}#export-svg .labelBkg{background-color:rgba(204, 204, 204, 0.5);}#export-svg .cluster rect{fill:#ffffff;stroke:hsl(0, 0%, 90%);stroke-width:2px;}#export-svg .cluster text{fill:#000000;}#export-svg .cluster span{color:#000000;}#export-svg div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:arial,sans-serif;font-size:12px;background:#ffffff;border:1px solid hsl(0, 0%, 90%);border-radius:2px;pointer-events:none;z-index:100;}#export-svg .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#export-svg rect.text{fill:none;stroke-width:0;}#export-svg .icon-shape,#export-svg .image-shape{background-color:hsl(-120, 0%, 80%);text-align:center;}#export-svg .icon-shape p,#export-svg .image-shape p{background-color:hsl(-120, 0%, 80%);padding:2px;}#export-svg .icon-shape rect,#export-svg .image-shape rect{opacity:0.5;background-color:hsl(-120, 0%, 80%);fill:hsl(-120, 0%, 80%);}#export-svg .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#export-svg .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#export-svg .node .neo-node{stroke:#000000;}#export-svg [data-look="neo"].node rect,#export-svg [data-look="neo"].cluster rect,#export-svg [data-look="neo"].node polygon{stroke:url(#export-svg-gradient);filter:drop-shadow( 0px 1px 2px rgba(0, 0, 0, 0.25));}#export-svg [data-look="neo"].node path{stroke:url(#export-svg-gradient);stroke-width:2;}#export-svg [data-look="neo"].node .outer-path{filter:drop-shadow( 0px 1px 2px rgba(0, 0, 0, 0.25));}#export-svg [data-look="neo"].node .neo-line path{stroke:#000000;filter:none;}#export-svg [data-look="neo"].node circle{stroke:url(#export-svg-gradient);filter:drop-shadow( 0px 1px 2px rgba(0, 0, 0, 0.25));}#export-svg [data-look="neo"].node circle .state-start{fill:#000000;}#export-svg [data-look="neo"].statediagram-cluster rect{fill:#ffffff;stroke:url(#export-svg-gradient);stroke-width:2;}#export-svg [data-look="neo"].icon-shape .icon{fill:url(#export-svg-gradient);filter:drop-shadow( 0px 1px 2px rgba(0, 0, 0, 0.25));}#export-svg [data-look="neo"].icon-shape .icon-neo path{stroke:url(#export-svg-gradient);filter:drop-shadow( 0px 1px 2px rgba(0, 0, 0, 0.25));}#export-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="export-svg_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="7.75" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="export-svg_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="4" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="export-svg_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="export-svg_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="export-svg_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="10.75" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="export-svg_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="export-svg_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="export-svg_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="export-svg_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"/></marker><marker id="export-svg_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"/></marker><marker id="export-svg_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"/></marker><marker id="export-svg_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"/></marker><g class="root"><g class="clusters"/><g class="edgePaths"><path d="M331.3343734741211,53L331.3343734741211,78L331.3343734741211,99" id="L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 37 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MzMxLjMzNDM3MzQ3NDEyMTEsInkiOjUzfSx7IngiOjMzMS4zMzQzNzM0NzQxMjExLCJ5Ijo3OH0seyJ4IjozMzEuMzM0MzczNDc0MTIxMSwieSI6MTAzfV0=" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M273.9532438214954,225.63138255440552L119.23742910432037,313.59798498376904Q110.59375,318.51251220703125 110.59375,328.45563879209743L110.59375,387.01251220703125L110.59375,455.51251220703125L110.59375,550.2375106811523L110.59375,644.9625091552734L110.59375,676.4625091552734" id="L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 535.0964965820312 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6MjczLjk1MzI0MzgyMTQ5NTQsInkiOjIyNS42MzEzODI1NTQ0MDU1Mn0seyJ4IjoxMTAuNTkzNzUsInkiOjMxOC41MTI1MTIyMDcwMzEyNX0seyJ4IjoxMTAuNTkzNzUsInkiOjM4Ny4wMTI1MTIyMDcwMzEyNX0seyJ4IjoxMTAuNTkzNzUsInkiOjQ1NS41MTI1MTIyMDcwMzEyNX0seyJ4IjoxMTAuNTkzNzUsInkiOjU1MC4yMzc1MTA2ODExNTIzfSx7IngiOjExMC41OTM3NSwieSI6NjQ0Ljk2MjUwOTE1NTI3MzR9LHsieCI6MTEwLjU5Mzc1LCJ5Ijo2ODAuNDYyNTA5MTU1MjczNH1d" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M110.59375,767.4625091552734L110.59375,780.8311475612036Q110.59375,792.4625091552734 119.62264703984793,799.7951478873964L191.18068348395278,857.9095806147794" id="L_C_Z_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 118.32456970214844 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_C_Z_0" data-points="W3sieCI6MTEwLjU5Mzc1LCJ5Ijo3NjcuNDYyNTA5MTU1MjczNH0seyJ4IjoxMTAuNTkzNzUsInkiOjc5Mi40NjI1MDkxNTUyNzM0fSx7IngiOjE5NC4yODU3MDE1NzM4MjE1NCwieSI6ODYwLjQzMTI1OTE1NTI3MzR9XQ==" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M373.65722307479234,240.68966260635992L433.3827307339806,307.97992512820673Q442.7312469482422,318.51251220703125 442.7312469482422,332.5954858270212L442.7312469482422,350.01251220703125" id="L_B_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 125.34083557128906 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_B_D_0" data-points="W3sieCI6MzczLjY1NzIyMzA3NDc5MjM0LCJ5IjoyNDAuNjg5NjYyNjA2MzU5OTJ9LHsieCI6NDQyLjczMTI0Njk0ODI0MjIsInkiOjMxOC41MTI1MTIyMDcwMzEyNX0seyJ4Ijo0NDIuNzMxMjQ2OTQ4MjQyMiwieSI6MzU0LjAxMjUxMjIwNzAzMTI1fV0=" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M442.7312469482422,420.01251220703125L442.7312469482422,455.51251220703125L442.73124694824224,487.0125122070312" id="L_D_E_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 58 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_D_E_0" data-points="W3sieCI6NDQyLjczMTI0Njk0ODI0MjIsInkiOjQyMC4wMTI1MTIyMDcwMzEyNX0seyJ4Ijo0NDIuNzMxMjQ2OTQ4MjQyMiwieSI6NDU1LjUxMjUxMjIwNzAzMTI1fSx7IngiOjQ0Mi43MzEyNDY5NDgyNDIyNCwieSI6NDkxLjAxMjUxMjIwNzAzMTJ9XQ==" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M410.9974147209822,577.7286769280134L342.48357925429025,637.0825308066172Q333.3874969482422,644.9625091552734 333.3874969482422,656.9971579699956L333.3874969482422,686.9625091552734" id="L_E_F_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 134.24586486816406 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_E_F_0" data-points="W3sieCI6NDEwLjk5NzQxNDcyMDk4MjIsInkiOjU3Ny43Mjg2NzY5MjgwMTM0fSx7IngiOjMzMy4zODc0OTY5NDgyNDIyLCJ5Ijo2NDQuOTYyNTA5MTU1MjczNH0seyJ4IjozMzMuMzg3NDk2OTQ4MjQyMiwieSI6NjkwLjk2MjUwOTE1NTI3MzR9XQ==" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M333.3874969482422,756.9625091552734L333.3874969482422,780.8311475612036Q333.3874969482422,792.4625091552734 324.35859990839424,799.7951478873964L252.8005634642894,857.9095806147794" id="L_F_Z_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 128.82460021972656 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_F_Z_0" data-points="W3sieCI6MzMzLjM4NzQ5Njk0ODI0MjIsInkiOjc1Ni45NjI1MDkxNTUyNzM0fSx7IngiOjMzMy4zODc0OTY5NDgyNDIyLCJ5Ijo3OTIuNDYyNTA5MTU1MjczNH0seyJ4IjoyNDkuNjk1NTQ1Mzc0NDIwNjUsInkiOjg2MC40MzEyNTkxNTUyNzM0fV0=" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M474.4650791755022,577.7286769280134L542.9789146421941,637.0825308066172Q552.0749969482422,644.9625091552734 552.0749969482422,656.9971579699956L552.0749969482422,697.4625091552734" id="L_E_G_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 144.7459259033203 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_E_G_0" data-points="W3sieCI6NDc0LjQ2NTA3OTE3NTUwMjIsInkiOjU3Ny43Mjg2NzY5MjgwMTM0fSx7IngiOjU1Mi4wNzQ5OTY5NDgyNDIyLCJ5Ijo2NDQuOTYyNTA5MTU1MjczNH0seyJ4Ijo1NTIuMDc0OTk2OTQ4MjQyMiwieSI6NzAxLjQ2MjUwOTE1NTI3MzR9XQ==" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M552.0749969482422,746.4625091552734L552.0749969482422,792.4625091552734L552.0749969482422,813.4625091552734" id="L_G_H_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 58 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_G_H_0" data-points="W3sieCI6NTUyLjA3NDk5Njk0ODI0MjIsInkiOjc0Ni40NjI1MDkxNTUyNzM0fSx7IngiOjU1Mi4wNzQ5OTY5NDgyNDIyLCJ5Ijo3OTIuNDYyNTA5MTU1MjczNH0seyJ4Ijo1NTIuMDc0OTk2OTQ4MjQyMiwieSI6ODE3LjQ2MjUwOTE1NTI3MzR9XQ==" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M501.9429199713141,898.2679321783454L230.07034038243276,981.4406453099541Q222.03124237060547,983.9000091552734 222.03124237060547,992.3068853508308L222.03124237060547,1015.4000091552734" id="L_H_I_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 313.0678405761719 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_H_I_0" data-points="W3sieCI6NTAxLjk0MjkxOTk3MTMxNDEsInkiOjg5OC4yNjc5MzIxNzgzNDU0fSx7IngiOjIyMi4wMzEyNDIzNzA2MDU0NywieSI6OTgzLjkwMDAwOTE1NTI3MzR9LHsieCI6MjIyLjAzMTI0MjM3MDYwNTQ3LCJ5IjoxMDE5LjQwMDAwOTE1NTI3MzR9XQ==" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M516.9469810152721,913.2719932223033L444.26800284989537,976.0462060610504Q435.1749954223633,983.9000091552734 435.1749954223633,995.9152081598668L435.1749954223633,1025.9000091552734" id="L_H_J_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 139.6117706298828 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_H_J_0" data-points="W3sieCI6NTE2Ljk0Njk4MTAxNTI3MjEsInkiOjkxMy4yNzE5OTMyMjIzMDMzfSx7IngiOjQzNS4xNzQ5OTU0MjIzNjMzLCJ5Ijo5ODMuOTAwMDA5MTU1MjczNH0seyJ4Ijo0MzUuMTc0OTk1NDIyMzYzMywieSI6MTAyOS45MDAwMDkxNTUyNzM0fV0=" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M587.2030128812124,913.2719932223033L659.8819910465891,976.0462060610504Q668.9749984741211,983.9000091552734 668.9749984741211,995.9152081598668L668.9749984741211,1046.9000091552734" id="L_H_K_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 160.6118621826172 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_H_K_0" data-points="W3sieCI6NTg3LjIwMzAxMjg4MTIxMjQsInkiOjkxMy4yNzE5OTMyMjIzMDMzfSx7IngiOjY2OC45NzQ5OTg0NzQxMjExLCJ5Ijo5ODMuOTAwMDA5MTU1MjczNH0seyJ4Ijo2NjguOTc0OTk4NDc0MTIxMSwieSI6MTA1MC45MDAwMDkxNTUyNzM0fV0=" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M602.5122292932496,897.9627768102661L882.8512385409326,981.5105959702282Q890.8687515258789,983.9000091552734 890.8687515258789,992.2660004194722L890.8687515258789,1057.4000091552734" id="L_H_L_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 363.2281188964844 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_H_L_0" data-points="W3sieCI6NjAyLjUxMjIyOTI5MzI0OTYsInkiOjg5Ny45NjI3NzY4MTAyNjYxfSx7IngiOjg5MC44Njg3NTE1MjU4Nzg5LCJ5Ijo5ODMuOTAwMDA5MTU1MjczNH0seyJ4Ijo4OTAuODY4NzUxNTI1ODc4OSwieSI6MTA2MS40MDAwMDkxNTUyNzM0fV0=" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M222.03124237060547,1148.4000091552734L222.03124237060547,1165.9124567978718Q222.03124237060547,1173.4000091552734 229.47487453850115,1174.2098118805707L540.0015895682241,1207.9924296183558" id="L_I_M_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 333.37091064453125 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_I_M_0" data-points="W3sieCI6MjIyLjAzMTI0MjM3MDYwNTQ3LCJ5IjoxMTQ4LjQwMDAwOTE1NTI3MzR9LHsieCI6MjIyLjAzMTI0MjM3MDYwNTQ3LCJ5IjoxMTczLjQwMDAwOTE1NTI3MzR9LHsieCI6NTQzLjk3ODEyNjUyNTg3ODksInkiOjEyMDguNDI1MDQyNDA2NDMwM31d" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M435.1749954223633,1137.9000091552734L435.1749954223633,1165.45493920585Q435.1749954223633,1173.4000091552734 442.94644945919015,1175.051868306266L548.8791814672156,1197.5683693275523" id="L_J_M_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 140.44407653808594 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_J_M_0" data-points="W3sieCI6NDM1LjE3NDk5NTQyMjM2MzMsInkiOjExMzcuOTAwMDA5MTU1MjczNH0seyJ4Ijo0MzUuMTc0OTk1NDIyMzYzMywieSI6MTE3My40MDAwMDkxNTUyNzM0fSx7IngiOjU1Mi43OTE3NzMzNDQzNDExLCJ5IjoxMTk4LjQwMDAwOTE1NTI3MzR9XQ==" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M668.9749984741211,1116.9000091552734L668.9749984741211,1162.607936195409Q668.9749984741211,1173.4000091552734 666.6820101999249,1183.9456738353892L664.3890219257287,1194.4913385155048" id="L_K_M_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 69.00183868408203 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_K_M_0" data-points="W3sieCI6NjY4Ljk3NDk5ODQ3NDEyMTEsInkiOjExMTYuOTAwMDA5MTU1MjczNH0seyJ4Ijo2NjguOTc0OTk4NDc0MTIxMSwieSI6MTE3My40MDAwMDkxNTUyNzM0fSx7IngiOjY2My41MzkxNDMyMTA5NjMyLCJ5IjoxMTk4LjQwMDAwOTE1NTI3MzR9XQ==" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M890.8687515258789,1106.4000091552734L890.8687515258789,1165.492355041528Q890.8687515258789,1173.4000091552734 883.1215051724191,1174.9846755307099L772.5655699418932,1197.5984230703777" id="L_L_M_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 176.43905639648438 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_L_M_0" data-points="W3sieCI6ODkwLjg2ODc1MTUyNTg3ODksInkiOjExMDYuNDAwMDA5MTU1MjczNH0seyJ4Ijo4OTAuODY4NzUxNTI1ODc4OSwieSI6MTE3My40MDAwMDkxNTUyNzM0fSx7IngiOjc2OC42NDY3MTA0NDYwMDY0LCJ5IjoxMTk4LjQwMDAwOTE1NTI3MzR9XQ==" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M658.6468734741211,1243.4000091552734L658.6468734741211,1268.4000091552734L658.6468734741211,1289.4000091552734" id="L_M_N_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 37 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_M_N_0" data-points="W3sieCI6NjU4LjY0Njg3MzQ3NDEyMTEsInkiOjEyNDMuNDAwMDA5MTU1MjczNH0seyJ4Ijo2NTguNjQ2ODczNDc0MTIxMSwieSI6MTI2OC40MDAwMDkxNTUyNzM0fSx7IngiOjY1OC42NDY4NzM0NzQxMjExLCJ5IjoxMjkzLjQwMDAwOTE1NTI3MzR9XQ==" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/><path d="M658.6468734741211,1359.4000091552734L658.6468734741211,1384.4000091552734L658.6468734741211,1405.4000091552734" id="L_N_O_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style="stroke-dasharray: 0 0 37 9; stroke-dashoffset: 0;;" data-edge="true" data-et="edge" data-id="L_N_O_0" data-points="W3sieCI6NjU4LjY0Njg3MzQ3NDEyMTEsInkiOjEzNTkuNDAwMDA5MTU1MjczNH0seyJ4Ijo2NTguNjQ2ODczNDc0MTIxMSwieSI6MTM4NC40MDAwMDkxNTUyNzM0fSx7IngiOjY1OC42NDY4NzM0NzQxMjExLCJ5IjoxNDA5LjQwMDAwOTE1NTI3MzR9XQ==" marker-end="url(#export-svg_flowchart-v2-pointEnd-margin)"/></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(110.59375, 455.51251220703125)"><g class="label" data-id="L_B_C_0" transform="translate(-5.787499904632568, -10.5)"><foreignObject width="11.574999809265137" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"><p>بله</p></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_C_Z_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(442.7312469482422, 318.51251220703125)"><g class="label" data-id="L_B_D_0" transform="translate(-8.84375, -10.5)"><foreignObject width="17.6875" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"><p>خیر</p></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_D_E_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(333.3874969482422, 644.9625091552734)"><g class="label" data-id="L_E_F_0" transform="translate(-8.84375, -10.5)"><foreignObject width="17.6875" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"><p>خیر</p></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_F_Z_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(552.0749969482422, 644.9625091552734)"><g class="label" data-id="L_E_G_0" transform="translate(-5.787499904632568, -10.5)"><foreignObject width="11.574999809265137" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"><p>بله</p></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_G_H_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(222.03124237060547, 983.9000091552734)"><g class="label" data-id="L_H_I_0" transform="translate(-18.67500114440918, -10.5)"><foreignObject width="37.35000228881836" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"><p>IBS-D</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(435.1749954223633, 983.9000091552734)"><g class="label" data-id="L_H_J_0" transform="translate(-18.67500114440918, -10.5)"><foreignObject width="37.35000228881836" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"><p>IBS-C</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(668.9749984741211, 983.9000091552734)"><g class="label" data-id="L_H_K_0" transform="translate(-19.450000762939453, -10.5)"><foreignObject width="38.900001525878906" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"><p>IBS-M</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(890.8687515258789, 983.9000091552734)"><g class="label" data-id="L_H_L_0" transform="translate(-21.1875, -10.5)"><foreignObject width="42.375" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"><p>نامشخص</p></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_I_M_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_J_M_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_K_M_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_L_M_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_M_N_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_N_O_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml" class="labelBkg"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="flowchart-A-0" data-id="A" data-node="true" data-et="node" data-look="neo" transform="translate(331.3343734741211, 30.5)"><rect class="basic label-container" style="" data-id="A" x="-100.8125" y="-22.5" width="201.625" height="45" stroke="url(#gradient)"/><g class="label" style="" transform="translate(-84.8125, -10.5)"><rect/><foreignObject width="169.625" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>بیمار با درد شکمی مزمن و تغییر دفع</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-B-1" data-id="B" data-node="true" data-et="node" data-look="neo" transform="translate(331.3343734741211, 193.00625610351562)"><polygon points="90.00625228881836,0 180.01250457763672,-90.00625228881836 90.00625228881836,-180.01250457763672 0,-90.00625228881836" class="label-container" transform="translate(-89.50625228881836, 90.00625228881836)"/><g class="label" style="" transform="translate(-60.00625228881836, -10.5)"><rect/><foreignObject width="120.01250457763672" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Red Flags وجود دارد؟</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-C-3" data-id="C" data-node="true" data-et="node" data-look="neo" transform="translate(110.59375, 723.9625091552734)"><rect class="basic label-container" style="" data-id="C" x="-102.59375" y="-43.5" width="205.1875" height="87" stroke="url(#gradient)"/><g class="label" style="" transform="translate(-86.59375, -31.5)"><rect/><foreignObject width="173.1875" height="63"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>ارزیابی کامل<br />کولونوسکوپی + CBC/CRP/TSH<br />بررسی IBD، سرطان، سلیاک</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-Z-5" data-id="Z" data-node="true" data-et="node" data-look="neo" transform="translate(221.9906234741211, 882.9312591552734)"><rect class="basic label-container" style="" data-id="Z" x="-83.6187515258789" y="-22.5" width="167.2375030517578" height="45" stroke="url(#gradient)"/><g class="label" style="" transform="translate(-67.6187515258789, -10.5)"><rect/><foreignObject width="135.2375030517578" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>درمان بر اساس علت یافت‌شده</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-D-7" data-id="D" data-node="true" data-et="node" data-look="neo" transform="translate(442.7312469482422, 387.01251220703125)"><rect class="basic label-container" style="" data-id="D" x="-78.96875" y="-33" width="157.9375" height="66" stroke="url(#gradient)"/><g class="label" style="" transform="translate(-62.96875, -21)"><rect/><foreignObject width="125.9375" height="42"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>ارزیابی پایه آزمایشگاهی<br />CBC, CRP, تست سلیاک</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-E-9" data-id="E" data-node="true" data-et="node" data-look="neo" transform="translate(442.7312469482422, 550.2375106811523)"><polygon points="59.22500038146973,0 118.45000076293945,-59.22500038146973 59.22500038146973,-118.45000076293945 0,-59.22500038146973" class="label-container" transform="translate(-58.72500038146973, 59.22500038146973)"/><g class="label" style="" transform="translate(-29.225000381469727, -10.5)"><rect/><foreignObject width="58.45000076293945" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>نتایج طبیعی؟</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-F-11" data-id="F" data-node="true" data-et="node" data-look="neo" transform="translate(333.3874969482422, 723.9625091552734)"><rect class="basic label-container" style="" data-id="F" x="-70.20000076293945" y="-33" width="140.4000015258789" height="66" stroke="url(#gradient)"/><g class="label" style="" transform="translate(-54.20000076293945, -21)"><rect/><foreignObject width="108.4000015258789" height="42"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>بررسی اختلالات دیگر<br />سلیاک، IBD، عفونت‌ها</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-G-15" data-id="G" data-node="true" data-et="node" data-look="neo" transform="translate(552.0749969482422, 723.9625091552734)"><rect class="basic label-container" style="" data-id="G" x="-98.48750305175781" y="-22.5" width="196.97500610351562" height="45" stroke="url(#gradient)"/><g class="label" style="" transform="translate(-82.48750305175781, -10.5)"><rect/><foreignObject width="164.97500610351562" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>تشخیص IBS بر اساس Rome IV</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-H-17" data-id="H" data-node="true" data-et="node" data-look="neo" transform="translate(552.0749969482422, 882.9312591552734)"><polygon points="65.46875,0 130.9375,-65.46875 65.46875,-130.9375 0,-65.46875" class="label-container" transform="translate(-64.96875, 65.46875)"/><g class="label" style="" transform="translate(-35.46875, -10.5)"><rect/><foreignObject width="70.9375" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>زیرگروه IBS؟</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-I-19" data-id="I" data-node="true" data-et="node" data-look="neo" transform="translate(222.03124237060547, 1083.9000091552734)"><rect class="basic label-container" style="" data-id="I" x="-67.36249923706055" y="-64.5" width="134.7249984741211" height="129" stroke="url(#gradient)"/><g class="label" style="" transform="translate(-51.36249923706055, -52.5)"><rect/><foreignObject width="102.7249984741211" height="105"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>درمان خط اول:<br />Loperamide<br />Low-FODMAP<br />Rifaximin<br />Bile acid binders</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-J-21" data-id="J" data-node="true" data-et="node" data-look="neo" transform="translate(435.1749954223633, 1083.9000091552734)"><rect class="basic label-container" style="" data-id="J" x="-95.78125" y="-54" width="191.5625" height="108" stroke="url(#gradient)"/><g class="label" style="" transform="translate(-79.78125, -42)"><rect/><foreignObject width="159.5625" height="84"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>درمان خط اول:<br />Psyllium<br />PEG<br />Linaclotide / Lubiprostone</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-K-23" data-id="K" data-node="true" data-et="node" data-look="neo" transform="translate(668.9749984741211, 1083.9000091552734)"><rect class="basic label-container" style="" data-id="K" x="-88.01875305175781" y="-33" width="176.03750610351562" height="66" stroke="url(#gradient)"/><g class="label" style="" transform="translate(-72.01875305175781, -21)"><rect/><foreignObject width="144.03750610351562" height="42"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>مدیریت مخلوط:<br />تنظیم اجابت مزاج + آنتی‌اسپاسم</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-L-25" data-id="L" data-node="true" data-et="node" data-look="neo" transform="translate(890.8687515258789, 1083.9000091552734)"><rect class="basic label-container" style="" data-id="L" x="-83.875" y="-22.5" width="167.75" height="45" stroke="url(#gradient)"/><g class="label" style="" transform="translate(-67.875, -10.5)"><rect/><foreignObject width="135.75" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>اصلاح غذا + مدیریت استرس</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-M-27" data-id="M" data-node="true" data-et="node" data-look="neo" transform="translate(658.6468734741211, 1220.9000091552734)"><rect class="basic label-container" style="" data-id="M" x="-114.66875457763672" y="-22.5" width="229.33750915527344" height="45" stroke="url(#gradient)"/><g class="label" style="" transform="translate(-98.66875457763672, -10.5)"><rect/><foreignObject width="197.33750915527344" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>در صورت وجود درد: آنتی‌اسپاسم + TCA</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-N-35" data-id="N" data-node="true" data-et="node" data-look="neo" transform="translate(658.6468734741211, 1326.4000091552734)"><rect class="basic label-container" style="" data-id="N" x="-97.01250457763672" y="-33" width="194.02500915527344" height="66" stroke="url(#gradient)"/><g class="label" style="" transform="translate(-81.01250457763672, -21)"><rect/><foreignObject width="162.02500915527344" height="42"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>مداخلات رفتاری:<br />CBT، مدیریت استرس، هیپنوتراپی</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-O-37" data-id="O" data-node="true" data-et="node" data-look="neo" transform="translate(658.6468734741211, 1431.9000091552734)"><rect class="basic label-container" style="" data-id="O" x="-66.875" y="-22.5" width="133.75" height="45" stroke="url(#gradient)"/><g class="label" style="" transform="translate(-50.875, -10.5)"><rect/><foreignObject width="101.75" height="21"><div style="display: table-cell; white-space: normal; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>پیگیری و تنظیم درمان</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"/></filter></defs><defs><filter id="drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"/></filter></defs><linearGradient id="export-svg-gradient" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0042eb" stop-opacity="1"/><stop offset="100%" stop-color="#eb0042" stop-opacity="1"/></linearGradient></svg>
+<p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">IBS یک <span style=" font-weight:700;">تشخیص بالینی</span> است.</p>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">7.1. معیار Rome IV</span></h3>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">درد شکمی <span style=" font-weight:700;">&gt; 1 روز/هفته</span> طی ۳ ماه گذشته<br />به همراه ≥ 2 از موارد:</p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">ارتباط با دفع</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تغییر frequency</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تغییر stool form</li></ul>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">7.2. مطالعات پاراکلینیک (در صورت نیاز)</span></h3>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">در بیمار <span style=" font-weight:700;">بدون Red Flag</span> معمولاً کافی است:</p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">CBC</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">CRP</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تست سلیاک (در IBS-D/M)</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">تست انگل بر اساس منطقه</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">در افراد بالای 50 سال یا گروه پرخطر: کولونوسکوپی</li></ul></body></html>
+                    </div>
+                </details>
+                
+            
+                
+            
+                
+                <details class="section-card" name="accordion">
+                    <summary class="card-header">
+                        <div class="header-content">
+                            <div class="section-icon"><i class="fas fa-pills"></i></div>
+                            <h2 class="header-title">درمان</h2>
+                        </div>
+                        <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                    </summary>
+                    <div class="sticky-title">درمان</div>
+                    <div class="card-body">
+                        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<h2 dir='rtl' style=" margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:x-large; font-weight:700;">8.1. درمان عمومی برای همه بیماران</span></h2>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">آموزش بیمار (Cornerstone)</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">اطمینان دادن که بیماری خوش‌خیم است</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">توضیح نقش استرس و محور Brain–Gut</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">عدم نیاز به تست‌های گسترده</li></ul>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">اصلاحات رژیمی</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Low-FODMAP diet</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">کاهش چربی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">پرهیز از ادویه، الکل، قهوه</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">ارزیابی عدم تحمل لاکتوز</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">افزایش فیبر محلول (نه فیبر نامحلول)</li></ul>
+<h3 dir='rtl' style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">اصلاح سبک زندگی</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">ورزش منظم</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">خواب کافی</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">مدیریت استرس</li></ul>
+<hr />
+<h2 dir='rtl' style=" margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:x-large; font-weight:700;">8.2. درمان دارویی بر اساس نوع IBS</span></h2>
+<h3 style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">IBS-C (غالب با یبوست)</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">فیبر محلول (پسیلیوم)</li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">پلی‌اتیلن گلایکول (PEG)</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">Linaclotide</span> یا <span style=" font-weight:700;">Plecanatide</span></li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">Lubiprostone</span></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">آنتی‌اسپاسمودیک‌ها:
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;">
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Dicyclomine</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Hyoscine</li></ul></li></ul>
+<h3 style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">IBS-D (غالب با اسهال)</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">Loperamide</span></li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">Bile acid binders</span> مثل Cholestyramine</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">Rifaximin</span> (طبق هاریسون برای IBS-D)</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:700;">Eluxadoline</span></li>
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">آنتی‌اسپاسمودیک‌ها</li></ul>
+<h3 style=" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:large; font-weight:700;">IBS-M</span></h3>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">درمان علامتی (تنظیم مدفوع + ضداسپاسم)</li></ul>
+<hr />
+<h2 dir='rtl' style=" margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:x-large; font-weight:700;">8.3. درمان درد و نفخ</span></h2>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">ضداسپاسم‌ها (hyoscine، mebeverine)</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Peppermint oil</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">TCA ها (مثلاً Amitriptyline)</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">SSRIها برای اضطراب/افسردگی همراه</li></ul>
+<hr />
+<h2 dir='rtl' style=" margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:x-large; font-weight:700;">8.4. درمان‌های روان‌پزشکی و رفتاری</span></h2>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">هاریسون تأکید می‌کند که در همه بیماران قابل‌بررسی است:</p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">CBT</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Stress management</li>
+<li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Hypnotherapy (gut-directed)</li></ul>
+<hr />
+<h2 dir='rtl' style=" margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:x-large; font-weight:700;">8.5. پروبیوتیک‌ها</span></h2>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">هاریسون: شواهد متوسط، می‌توان در بیماران منتخب استفاده کرد.</p></body></html>
+                    </div>
+                </details>
+                
+            
+                
+            
+                
+                <details class="section-card" name="accordion">
+                    <summary class="card-header">
+                        <div class="header-content">
+                            <div class="section-icon"><i class="fas fa-archive"></i></div>
+                            <h2 class="header-title">پیش آگهی</h2>
+                        </div>
+                        <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+                    </summary>
+                    <div class="sticky-title">پیش آگهی</div>
+                    <div class="card-body">
+                        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
+</style></head><body style=" font-family:'Vazirmatn'; font-size:13pt; font-weight:400; font-style:normal;">
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">بیماری <span style=" font-weight:700;">مزمن اما خوش‌خیم</span></p>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">مرگ‌ومیر ندارد</p>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">دوره‌های تشدید و فروکش</p>
+<p dir='rtl' style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">کیفیت زندگی ممکن است در افرادی بسیار افت کند، اما با درمان چندوجهی قابل‌کنترل است.</p></body></html>
+                    </div>
+                </details>
+                
+            
+        </div>
+
+        
+        <section class="flashcard-container">
+            <h2 style="text-align: center; margin-bottom: 20px;">فلش‌کارت‌ها</h2>
+            
+            <div class="flashcard">
+                <div class="flashcard-question">سؤال: تعریف IBS بر اساس معیار Rome IV چیست؟
+</div>
+                <button class="flashcard-toggle" onclick="toggleAnswer(this)">نمایش پاسخ</button>
+                <div class="flashcard-answer">پاسخ: درد شکمی عودکننده حداقل یک روز در هفته طی سه ماه گذشته همراه با حداقل دو مورد: ارتباط درد با دفع، تغییر در فراوانی دفع، یا تغییر در قوام مدفوع؛ بدون وجود علت ساختاری.</div>
+            </div>
+            
+            <div class="flashcard">
+                <div class="flashcard-question">سؤال: شایع‌ترین گروه سنی مبتلا به IBS کدام است؟
+</div>
+                <button class="flashcard-toggle" onclick="toggleAnswer(this)">نمایش پاسخ</button>
+                <div class="flashcard-answer">پاسخ: افراد 20 تا 40 سال؛ با شیوع بالاتر در زنان. </div>
+            </div>
+            
+            <div class="flashcard">
+                <div class="flashcard-question">سؤال: مهم‌ترین مکانیسم پاتوفیزیولوژیک IBS چیست؟
+</div>
+                <button class="flashcard-toggle" onclick="toggleAnswer(this)">نمایش پاسخ</button>
+                <div class="flashcard-answer">پاسخ: اختلال در محور Brain–Gut همراه با حساسیت احشایی (Visceral Hyperalgesia). </div>
+            </div>
+            
+        </section>
+        
+    </main>
+
+    <button id="btn-back-to-top" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // --- SECURITY SCRIPT ---
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) { return false; } // F12
+            if(e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) { return false; }
+            if(e.ctrlKey && e.key === 'U') { return false; }
+        }
+
+        // --- THEME TOGGLE ---
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const icon = document.getElementById('theme-icon');
+            if (document.body.classList.contains('light-mode')) {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            } else {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+        }
+
+        // --- ACCORDION LOGIC ---
+        const accordions = document.querySelectorAll('details[name="accordion"]');
+
+        accordions.forEach(acc => {
+            acc.addEventListener('toggle', (e) => {
+                if (acc.open) {
+                    // Close others
+                    accordions.forEach(otherAcc => {
+                        if (otherAcc !== acc && otherAcc.open) {
+                            otherAcc.open = false;
+                        }
+                    });
+                    // Scroll to the opened accordion
+                    acc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // --- BACK TO TOP SCRIPT ---
+        const btnTop = document.getElementById("btn-back-to-top");
+        window.onscroll = function() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                btnTop.style.display = "block";
+            } else {
+                btnTop.style.display = "none";
+            }
+        };
+        function scrollToTop() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // --- FLASHCARD TOGGLE SCRIPT ---
+        function toggleAnswer(button) {
+            const answer = button.nextElementSibling;
+            const isVisible = answer.style.display === 'block';
+            answer.style.display = isVisible ? 'none' : 'block';
+            button.textContent = isVisible ? 'نمایش پاسخ' : 'پنهان کردن پاسخ';
+        }
+    </script>
+</body>
+</html>
